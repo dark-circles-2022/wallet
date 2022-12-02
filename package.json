@@ -10,8 +10,11 @@
     "prepack": "./scripts/prepack-contracts-package.sh"
   },
   "dependencies": {
-    "@account-abstraction/contracts": "^0.2.0",
-    "@account-abstraction/sdk": "^0.2.0",
+    "@account-abstraction/contracts": "^0.3.0",
+    "@account-abstraction/sdk": "^0.3.0",
+    "@biconomy/core-types": "^0.0.2",
+    "@biconomy/smart-account": "^0.0.2",
+    "@biconomy/web3-auth": "^0.0.2",
     "@chakra-ui/react": "^2.4.2",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",

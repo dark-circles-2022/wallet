@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
+import MockCreateWallet from "./screens/mock_create_wallet";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -16,13 +17,9 @@ function App() {
           alt="logo"
         />
         <p>Wallet popup</p>
+        <p>{/* <MockCreateWallet /> */}</p>
         <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
+          <code>App.tsx</code> and save to test HMR updates.
         </p>
         <p>
           <a
