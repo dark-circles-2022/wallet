@@ -2,13 +2,10 @@
   "manifest_version": 3,
   "name": "Vite React Chrome Extension",
   "version": "1.0.0",
-  "action": {
-    "default_popup": "index.html"
-  },
   "content_scripts": [
     {
       "js": ["src/main.tsx"],
-      "matches": ["https://blank.org/*"]
+      "matches": ["http://localhost:3000/*"]
     }
   ]
 }

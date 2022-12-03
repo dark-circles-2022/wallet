@@ -10,9 +10,9 @@ import { Signer } from "@ethersproject/abstract-signer";
 // } from "./types";
 import {
   BaseApiParams,
-  BaseWalletAPI,
-} from "@account-abstraction/sdk/dist/src/BaseWalletAPI";
-import { SimpleWalletAPI } from "@account-abstraction/sdk";
+  BaseAccountAPI,
+} from "@account-abstraction/sdk/dist/src/BaseAccountAPI";
+import { SimpleAccountAPI } from "@account-abstraction/sdk";
 
 /**
  * constructor params, added no top of base params:
@@ -33,7 +33,7 @@ export interface MyWalletApiParams extends BaseApiParams {
  * - nonce method is "nonce()"
  * - execute method is "execFromEntryPoint()"
  */
-export class MyWalletApi extends SimpleWalletAPI {
+export class MyWalletApi extends SimpleAccountAPI {
   constructor(params: MyWalletApiParams) {
     super(params);
   }
