@@ -15,11 +15,17 @@
 
 .App-header {
   position: absolute;
-  top: 10vh;
-  left: 10vw;
+  top: 0;
+  left: 0;
+  min-width: 100vw;
+  min-height: 100vh;
   background-color: #282c34;
-  min-height: 80vh;
-  min-width: 80vw;
+  /* min-height: 80vh;
+  max-width: 20rem;
+  max-height: 35.5rem;
+  min-width: 20rem;
+  min-height: 35.5rem; */
+  margin: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
