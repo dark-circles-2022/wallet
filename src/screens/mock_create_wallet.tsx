@@ -1,66 +1,123 @@
-import { useSmartAccountContext } from "../contexts/SmartAccountContext";
-import { useWeb3AuthContext } from "../contexts/SocialLoginContext";
+import styles from "./mock_create_wallet.css";
+import { useCallback, useEffect, useState } from "react";
+import { ethers } from "ethers";
+import { ChainId } from "@biconomy/core-types";
+import SocialLogin from "@biconomy/web3-auth";
+import SmartAccount from "@biconomy/smart-account";
 
 const MockCreateWallet = () => {
-  const {
-    address,
-    loading: eoaLoading,
-    userInfo,
-    connect,
-    disconnect,
-    getUserInfo,
-  } = useWeb3AuthContext();
-  const {
-    selectedAccount,
-    loading: scwLoading,
-    setSelectedAccount,
-  } = useSmartAccountContext();
+  const [provider, setProvider] = useState<any>();
+  const [account, setAccount] = useState<string>();
+  const [smartAccount, setSmartAccount] = useState<SmartAccount | null>(null);
+  const [scwAddress, setScwAddress] = useState("");
+  const [scwLoading, setScwLoading] = useState(false);
+  const [socialLoginSDK, setSocialLoginSDK] = useState<SocialLogin | null>(
+    null
+  );
+
+  const connectWeb3 = useCallback(async () => {
+    if (typeof window === "undefined") return;
+    console.log("socialLoginSDK", socialLoginSDK);
+    if (socialLoginSDK?.provider) {
+      const web3Provider = new ethers.providers.Web3Provider(
+        socialLoginSDK.provider
+      );
+      setProvider(web3Provider);
+      const accounts = await web3Provider.listAccounts();
+      setAccount(accounts[0]);
+      return;
+    }
+    if (socialLoginSDK) {
+      socialLoginSDK.showWallet();
+      return socialLoginSDK;
+    }
+    const sdk = new SocialLogin();
+    await sdk.init(ethers.utils.hexValue(80001));
+    setSocialLoginSDK(sdk);
+    sdk.showConnectModal();
+    sdk.showWallet();
+    return socialLoginSDK;
+  }, [socialLoginSDK]);
+
+  // if wallet already connected close widget
+  useEffect(() => {
+    console.log("hidelwallet");
+    if (socialLoginSDK && socialLoginSDK.provider) {
+      socialLoginSDK.hideWallet();
+    }
+  }, [account, socialLoginSDK]);
+
+  // after metamask login -> get provider event
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (account) {
+        clearInterval(interval);
+      }
+      if (socialLoginSDK?.provider && !account) {
+        connectWeb3();
+      }
+    }, 1000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [account, connectWeb3, socialLoginSDK]);
+
+  const disconnectWeb3 = async () => {
+    if (!socialLoginSDK || !socialLoginSDK.web3auth) {
+      console.error("Web3Modal not initialized.");
+      return;
+    }
+    await socialLoginSDK.logout();
+    socialLoginSDK.hideWallet();
+    setProvider(undefined);
+    setAccount(undefined);
+    setScwAddress("");
+  };
+
+  useEffect(() => {
+    async function setupSmartAccount() {
+      setScwAddress("");
+      setScwLoading(true);
+      const smartAccount = new SmartAccount(provider, {
+        activeNetworkId: ChainId.GOERLI,
+        supportedNetworksIds: [ChainId.GOERLI],
+      });
+      await smartAccount.init();
+      const context = smartAccount.getSmartAccountContext();
+      setScwAddress(context.baseWallet.getAddress());
+      setSmartAccount(smartAccount);
+      setScwLoading(false);
+    }
+    if (!!provider && !!account) {
+      setupSmartAccount();
+      console.log("Provider...", provider);
+    }
+  }, [account, provider]);
 
   return (
-    <div>
-      <button
-        onClick={
-          !address
-            ? connect
-            : () => {
-                setSelectedAccount(null);
-                disconnect();
-              }
-        }
-      >
-        {!address ? "Connect Wallet" : "Disconnect Wallet"}
-      </button>
+    <div className={styles.container}>
+      <main className={styles.main}>
+        <h1>Biconomy SDK Next.js Web3Auth Example</h1>
+        <button onClick={!account ? connectWeb3 : disconnectWeb3}>
+          {!account ? "Connect Wallet" : "Disconnect Wallet"}
+        </button>
 
-      {eoaLoading && <h2>Loading EOA...</h2>}
+        {account && (
+          <div>
+            <h2>EOA Address</h2>
+            <p>{account}</p>
+          </div>
+        )}
 
-      {address && (
-        <div>
-          <h2>EOA Address</h2>
-          <p>{address}</p>
-        </div>
-      )}
+        {scwLoading && <h2>Loading Smart Account...</h2>}
 
-      {scwLoading && <h2>Loading Smart Account...</h2>}
-
-      {selectedAccount && address && (
-        <div>
-          <h2>Smart Account Address</h2>
-          <p>{selectedAccount.smartAccountAddress}</p>
-        </div>
-      )}
-
-      {address && (
-        <button onClick={() => getUserInfo()} title="Get User Info" />
-      )}
-
-      {userInfo && (
-        <div style={{ maxWidth: 800, wordBreak: "break-all" }}>
-          <h2>User Info</h2>
-          <pre style={{ whiteSpace: "pre-wrap" }}>
-            {JSON.stringify(userInfo, null, 2)}
-          </pre>
-        </div>
-      )}
+        {scwAddress && (
+          <div>
+            <h2>Smart Account Address</h2>
+            <p>{scwAddress}</p>
+          </div>
+        )}
+      </main>
     </div>
   );
 };

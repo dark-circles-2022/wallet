@@ -5,7 +5,7 @@
   "content_scripts": [
     {
       "js": ["src/main.tsx"],
-      "matches": ["https://blank.org/*"]
+      "matches": ["http://localhost:3000/*"]
     }
   ]
 }

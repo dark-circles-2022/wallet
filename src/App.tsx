@@ -1,10 +1,16 @@
-import { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import MockCreateWallet from "./screens/mock_create_wallet";
+import { useWeb3AuthContext } from "./contexts/SocialLoginContext";
+const SocialLoginDynamic = React.lazy(
+  () => import("./screens/mock_create_wallet")
+);
 
 function App() {
   const [count, setCount] = useState(0);
+  const { provider, address, ethersProvider } = useWeb3AuthContext();
+  console.log("madarchod1", provider);
 
   useEffect(() => {}, []);
 
@@ -16,11 +22,10 @@ function App() {
           className="App-logo"
           alt="logo"
         />
-        <p>Wallet popup</p>
-        <p>{/* <MockCreateWallet /> */}</p>
-        <p>
-          <code>App.tsx</code> and save to test HMR updates.
-        </p>
+        <Suspense fallback={<div>Loading...</div>}>
+          <SocialLoginDynamic />
+        </Suspense>
+        <code>App.tsx</code> and save to test HMR updates.
         <p>
           <a
             className="App-link"

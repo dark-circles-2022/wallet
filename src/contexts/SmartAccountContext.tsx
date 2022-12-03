@@ -59,7 +59,8 @@ export const useSmartAccountContext = () => useContext(SmartAccountContext);
 
 // Provider
 export const SmartAccountProvider = ({ children }: any) => {
-  const { provider, address } = useWeb3AuthContext();
+  const { provider, address, ethersProvider } = useWeb3AuthContext();
+  console.log("madarchod", ethersProvider);
   const [wallet, setWallet] = useState<SmartAccount | null>(null);
   const [state, setState] = useState<SmartAccountState | null>(null);
   const [selectedAccount, setSelectedAccount] = useState<ISmartAccount | null>(
